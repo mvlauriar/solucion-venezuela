@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Parroquia Santa Teresa · Donaciones — PROTOTIPO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #fdfaf3; --card: #fffdf8; --deep: #f4ecdd;
+    --trav: #e3d7bd; --trav-soft: #eee5d2;
+    --ink: #2e2318; --ink-strong: #1f1710; --ink-2: #4d3f2e; --ink-3: #7d6c54;
+    --oxblood: #5c1f1a; --oxblood-2: #7a2f28;
+    --bronze: #8a6418; --bronze-soft: #b8943e;
+    --green: #2c4a33; --green-bg: #ebf1ea;
+    --shadow: 0 1px 2px rgba(46,35,24,.06), 0 10px 30px rgba(46,35,24,.08);
+    --arch: 999px;
+    --disp: 'EB Garamond', Georgia, serif;
+    --prose: 'Lora', Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--prose); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .demo-ribbon {
+    background: var(--ink-strong); color: #f4e9d2; text-align: center;
+    font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase;
+    padding: 8px 12px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 22px 18px 70px; }
+
+  /* Cabecera de la parroquia */
+  .parish-head { text-align: center; padding: 18px 0 10px; }
+  .parish-arch {
+    width: 74px; height: 88px; margin: 0 auto 14px;
+    border: 1.5px solid var(--bronze);
+    border-radius: var(--arch) var(--arch) 6px 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--disp); color: var(--bronze); font-size: 26px;
+    background: var(--card);
+  }
+  .parish-head h1 { font-family: var(--disp); font-weight: 600; font-size: 30px; margin: 0; color: var(--ink-strong); line-height: 1.15; }
+  .parish-head .loc { font-style: italic; color: var(--ink-3); margin-top: 4px; font-size: 15px; }
+  .parish-head .orn { color: var(--bronze-soft); letter-spacing: .5em; font-size: 12px; margin-top: 12px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--trav); border-radius: 12px;
+    box-shadow: var(--shadow); padding: 20px; margin: 16px 0;
+  }
+  .card h2 { font-family: var(--disp); font-weight: 600; font-size: 21px; margin: 0 0 12px; color: var(--ink-strong); }
+  .muted { color: var(--ink-3); font-size: 14px; }
+  .hidden { display: none !important; }
+
+  .btn {
+    display: block; width: 100%; text-align: center;
+    padding: 15px; border-radius: 9px; border: 1.5px solid var(--oxblood);
+    background: var(--oxblood); color: #fdf6ea;
+    font-family: var(--prose); font-size: 17px; font-weight: 600;
+    cursor: pointer; letter-spacing: .01em;
+  }
+  .btn:active { background: var(--oxblood-2); }
+  .btn.secondary { background: var(--card); color: var(--ink-strong); border-color: var(--ink-strong); }
+  .btn.ghost { background: transparent; border-color: var(--trav); color: var(--ink-3); font-weight: 500; }
+  .btn + .btn { margin-top: 10px; }
+  .btn:disabled { opacity: .5; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 13px; font-size: 17px;
+    border: 1.5px solid var(--trav); border-radius: 8px; background: var(--bg);
+    color: var(--ink-strong); font-family: var(--prose);
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--ink-2); background: var(--card); }
+  .row2 { display: grid; grid-template-columns: 88px 1fr; gap: 10px; }
+
+  /* Chips de monto y frecuencia */
+  .chips { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .chip {
+    padding: 14px 6px; text-align: center; cursor: pointer;
+    border: 1.5px solid var(--trav); border-radius: 9px; background: var(--bg);
+    font-family: var(--prose); font-size: 16.5px; font-weight: 600; color: var(--ink-strong);
+  }
+  .chip.sel { border-color: var(--oxblood); background: #f7ece7; color: var(--oxblood); }
+  .chip small { display: block; font-weight: 400; font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+  .freq { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 4px 0 14px; }
+  .freq .chip { padding: 11px 4px; font-size: 14.5px; }
+
+  .kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--trav-soft); font-size: 15.5px; }
+  .kv:last-child { border-bottom: 0; }
+  .kv b { color: var(--ink-strong); }
+
+  .pill-ok { display: inline-block; background: var(--green-bg); color: var(--green); border-radius: 999px; padding: 3px 12px; font-size: 13px; font-weight: 600; }
+
+  .success-arch {
+    width: 90px; height: 106px; margin: 6px auto 16px;
+    border: 1.5px solid var(--bronze);
+    border-radius: var(--arch) var(--arch) 6px 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--disp); color: var(--bronze); font-size: 34px;
+    background: var(--card);
+  }
+  .center { text-align: center; }
+  .receipt { background: var(--deep); border-radius: 9px; padding: 14px 16px; margin-top: 14px; font-size: 14.5px; }
+  .receipt .num { font-family: var(--disp); font-size: 18px; color: var(--ink-strong); letter-spacing: .06em; }
+
+  .foot { text-align: center; margin-top: 34px; font-size: 13px; color: var(--ink-3); font-style: italic; line-height: 1.6; }
+  .foot a { color: var(--oxblood); }
+
+  .steps { display: flex; gap: 6px; justify-content: center; margin: 6px 0 4px; }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--trav); }
+  .step-dot.on { background: var(--bronze); }
+
+  /* Vista admin */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--trav);
+    border-radius: var(--arch) var(--arch) 10px 10px;
+    padding: 22px 10px 14px; text-align: center; box-shadow: var(--shadow);
+  }
+  .stat .n { font-family: var(--disp); font-size: 26px; font-weight: 600; color: var(--oxblood); }
+  .stat .l { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); padding: 7px 8px; border-bottom: 1.5px solid var(--trav); background: var(--trav-soft); }
+  td { padding: 9px 8px; border-bottom: 1px solid var(--trav-soft); }
+</style>
+</head>
+<body>
+
+<div class="demo-ribbon">Prototipo de demostración — ningún pago real se procesa</div>
+
+<div class="wrap">
+
+  <!-- ===== PORTADA PARROQUIA ===== -->
+  <header class="parish-head">
+    <div class="parish-arch">✟</div>
+    <h1 id="parishName">Parroquia Santa Teresa</h1>
+    <div class="loc">La Tahona, Caracas · <span class="muted">(nombre configurable por parroquia)</span></div>
+    <div class="orn">✦ ✦ ✦</div>
+  </header>
+
+  <!-- ===== PANTALLA 1: INICIO ===== -->
+  <section id="scr-home">
+    <div class="card">
+      <h2>Horarios de Misa</h2>
+      <div class="kv"><span>Domingo</span><b>8:00 · 10:30 · 12:00 · 6:00 pm</b></div>
+      <div class="kv"><span>Lunes a viernes</span><b>7:00 am · 6:30 pm</b></div>
+      <div class="kv"><span>Confesiones</span><b>Sáb 4:00 – 5:30 pm</b></div>
+    </div>
+
+    <div class="card">
+      <h2>Apoya a tu parroquia</h2>
+      <p style="margin:0 0 14px">Tu aporte sostiene la misión, el templo y las obras de caridad. Puedes dar una sola vez o comprometerte con un aporte recurrente.</p>
+      <button class="btn" onclick="go('amount')">Donar ahora</button>
+      <button class="btn ghost" onclick="go('admin')">Vista del administrador (demo)</button>
+    </div>
+  </section>
+
+  <!-- ===== PANTALLA 2: MONTO ===== -->
+  <section id="scr-amount" class="hidden">
+    <div class="card">
+      <div class="steps"><span class="step-dot on"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span></div>
+      <h2>Tu aporte</h2>
+
+      <label class="field" style="margin-bottom:6px"><span style="font-size:12.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)">Destino</span></label>
+      <div class="field">
+        <select id="fund">
+          <option>Colecta dominical</option>
+          <option>Diezmo</option>
+          <option>Mantenimiento del templo</option>
+          <option>Cáritas parroquial</option>
+          <option>Intención de Misa</option>
+        </select>
+      </div>
+
+      <div class="chips" id="amtChips">
+        <div class="chip" data-amt="100">Bs 100<small>≈ $0,90</small></div>
+        <div class="chip sel" data-amt="200">Bs 200<small>≈ $1,80</small></div>
+        <div class="chip" data-amt="500">Bs 500<small>≈ $4,50</small></div>
+        <div class="chip" data-amt="1000">Bs 1.000<small>≈ $9,00</small></div>
+        <div class="chip" data-amt="2000">Bs 2.000<small>≈ $18,00</small></div>
+        <div class="chip" data-amt="otro">Otro<small>monto libre</small></div>
+      </div>
+      <div class="field hidden" id="customAmtWrap">
+        <label>Monto en bolívares</label>
+        <input id="customAmt" type="number" inputmode="numeric" placeholder="Bs" />
+      </div>
+
+      <label class="field" style="margin-bottom:6px"><span style="font-size:12.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)">Frecuencia</span></label>
+      <div class="freq" id="freqChips">
+        <div class="chip sel" data-freq="unica">Única</div>
+        <div class="chip" data-freq="semanal">Semanal</div>
+        <div class="chip" data-freq="mensual">Mensual</div>
+      </div>
+      <p class="muted" id="freqNote" style="margin:0 0 14px">Un solo aporte, hoy.</p>
+
+      <button class="btn" onclick="go('who')">Continuar</button>
+      <button class="btn ghost" onclick="go('home')">Volver</button>
+    </div>
+  </section>
+
+  <!-- ===== PANTALLA 3: DATOS ===== -->
+  <section id="scr-who" class="hidden">
+    <div class="card">
+      <div class="steps"><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot"></span><span class="step-dot"></span></div>
+      <h2>Tus datos</h2>
+      <p class="muted" id="guestNote" style="margin-top:0">Puedes continuar como invitado — solo necesitamos lo mínimo para el pago móvil.</p>
+
+      <div class="field" id="guestToggleWrap">
+        <label style="display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:15px;font-weight:500;cursor:pointer">
+          <input type="checkbox" id="guestMode" checked style="width:20px;height:20px;accent-color:var(--oxblood)" onchange="renderWho()" />
+          Continuar como invitado
+        </label>
+      </div>
+
+      <div id="registerFields" class="hidden">
+        <div class="field"><label>Nombre y apellido</label><input id="fName" placeholder="María Pérez" /></div>
+        <div class="field"><label>Correo (opcional, para tu comprobante anual)</label><input id="fEmail" type="email" placeholder="maria@ejemplo.com" /></div>
+      </div>
+
+      <div class="field">
+        <label>Cédula</label>
+        <div class="row2">
+          <select id="cedType"><option>V</option><option>E</option></select>
+          <input id="cedNum" inputmode="numeric" placeholder="12.345.678" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Teléfono (pago móvil)</label>
+        <input id="phone" inputmode="tel" placeholder="0414-123-4567" />
+      </div>
+      <div class="field">
+        <label>Tu banco</label>
+        <select id="bank">
+          <option>Banco R4</option>
+          <option>Banco de Venezuela</option>
+          <option>Banesco</option>
+          <option>Mercantil</option>
+          <option>BBVA Provincial</option>
+          <option>BNC</option>
+        </select>
+      </div>
+
+      <button class="btn" onclick="goPay()">Continuar al pago</button>
+      <button class="btn ghost" onclick="go('amount')">Volver</button>
+    </div>
+  </section>
+
+  <!-- ===== PANTALLA 4: PAGO C2P ===== -->
+  <section id="scr-pay" class="hidden">
+    <div class="card">
+      <div class="steps"><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot"></span></div>
+      <h2>Confirmar pago móvil</h2>
+      <div class="kv"><span>Destino</span><b id="sumFund">—</b></div>
+      <div class="kv"><span>Monto</span><b id="sumAmt">—</b></div>
+      <div class="kv"><span>Frecuencia</span><b id="sumFreq">—</b></div>
+      <div class="kv"><span>Banco</span><b id="sumBank">—</b></div>
+      <p class="muted" style="margin:14px 0 6px">Tu banco te envió una <b>clave C2P</b> por SMS para autorizar este cobro. Ingrésala aquí:</p>
+      <div class="field">
+        <label>Clave C2P</label>
+        <input id="otp" inputmode="numeric" maxlength="8" placeholder="••••••" style="text-align:center;letter-spacing:.4em;font-size:22px" />
+      </div>
+      <button class="btn" onclick="finish()">Autorizar pago</button>
+      <button class="btn ghost" onclick="go('who')">Volver</button>
+      <p class="muted center" style="margin-bottom:0;margin-top:12px">El cobro lo procesa directamente tu banco. La parroquia recibe los fondos en su cuenta — la plataforma nunca toca el dinero.</p>
+    </div>
+  </section>
+
+  <!-- ===== PANTALLA 5: GRACIAS ===== -->
+  <section id="scr-done" class="hidden">
+    <div class="card center">
+      <div class="steps"><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot on"></span></div>
+      <div class="success-arch">✦</div>
+      <h2 style="font-size:26px">Que Dios te lo pague</h2>
+      <p style="margin:0">Tu aporte fue autorizado.</p>
+      <span class="pill-ok" id="doneFreqPill" style="margin-top:10px">Aporte único</span>
+      <div class="receipt" style="text-align:left">
+        <div class="num" id="rcptNum">COMPROBANTE Nº —</div>
+        <div class="kv"><span>Fecha</span><b id="rcptDate">—</b></div>
+        <div class="kv"><span>Monto</span><b id="rcptAmt">—</b></div>
+        <div class="kv"><span>Destino</span><b id="rcptFund">—</b></div>
+        <div class="kv"><span>Referencia bancaria</span><b id="rcptRef">—</b></div>
+      </div>
+      <p class="muted" style="margin-top:12px" id="doneNote">Recibirás la confirmación por SMS de tu banco. Si aportas de forma recurrente, tu comprobante anual estará disponible en la parroquia.</p>
+      <button class="btn secondary" onclick="go('home')" style="margin-top:8px">Volver al inicio</button>
+    </div>
+  </section>
+
+  <!-- ===== VISTA ADMIN (DEMO) ===== -->
+  <section id="scr-admin" class="hidden">
+    <div class="card">
+      <h2>Panel del administrador</h2>
+      <p class="muted" style="margin-top:0">Lo que ve la oficina parroquial. Datos de ejemplo.</p>
+      <div class="stats">
+        <div class="stat"><div class="n">Bs 48.350</div><div class="l">Recaudado este mes</div></div>
+        <div class="stat"><div class="n">Bs 6.200</div><div class="l">Hoy</div></div>
+        <div class="stat"><div class="n">64%</div><div class="l">Aportes recurrentes</div></div>
+        <div class="stat"><div class="n">212</div><div class="l">Feligreses registrados</div></div>
+      </div>
+    </div>
+    <div class="card" style="padding:12px">
+      <table>
+        <thead><tr><th>Hora</th><th>Feligrés</th><th>Destino</th><th style="text-align:right">Bs</th></tr></thead>
+        <tbody>
+          <tr><td>9:41</td><td>María P.</td><td>Colecta</td><td style="text-align:right">200</td></tr>
+          <tr><td>9:22</td><td><i>Invitado</i></td><td>Cáritas</td><td style="text-align:right">500</td></tr>
+          <tr><td>8:57</td><td>José R. <span class="pill-ok" style="font-size:10px">recurrente</span></td><td>Diezmo</td><td style="text-align:right">1.000</td></tr>
+          <tr><td>8:15</td><td>Ana G.</td><td>Intención de Misa</td><td style="text-align:right">300</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <p class="muted" style="margin:0">En la versión completa: exportar a Excel, conciliación automática con el banco, comprobantes anuales, catequesis, eventos y retiros con inscripción y pago.</p>
+    </div>
+    <button class="btn ghost" onclick="go('home')">Volver al inicio</button>
+  </section>
+
+  <div class="foot">
+    Prototipo · Los fondos van directo del banco del feligrés a la cuenta de la parroquia.<br/>
+    La plataforma solo registra y organiza — nunca custodia el dinero.
+  </div>
+</div>
+
+<script>
+  var state = { amt: 200, freq: 'unica', fund: 'Colecta dominical' };
+  var screens = ['home','amount','who','pay','done','admin'];
+
+  function go(name) {
+    for (var i = 0; i < screens.length; i++) {
+      document.getElementById('scr-' + screens[i]).classList.add('hidden');
+    }
+    document.getElementById('scr-' + name).classList.remove('hidden');
+    window.scrollTo(0, 0);
+    if (name === 'who') renderWho();
+  }
+
+  // Monto
+  document.getElementById('amtChips').addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var chips = document.querySelectorAll('#amtChips .chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('sel');
+    chip.classList.add('sel');
+    var v = chip.getAttribute('data-amt');
+    if (v === 'otro') {
+      document.getElementById('customAmtWrap').classList.remove('hidden');
+      state.amt = null;
+    } else {
+      document.getElementById('customAmtWrap').classList.add('hidden');
+      state.amt = parseInt(v, 10);
+    }
+  });
+
+  // Frecuencia
+  var freqNotes = {
+    unica: 'Un solo aporte, hoy.',
+    semanal: 'Se cobrará cada semana con tu autorización C2P. Puedes cancelarlo cuando quieras.',
+    mensual: 'Se cobrará cada mes con tu autorización C2P. Puedes cancelarlo cuando quieras.'
+  };
+  document.getElementById('freqChips').addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var chips = document.querySelectorAll('#freqChips .chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('sel');
+    chip.classList.add('sel');
+    state.freq = chip.getAttribute('data-freq');
+    document.getElementById('freqNote').textContent = freqNotes[state.freq];
+    renderWho();
+  });
+
+  function renderWho() {
+    var guestWrap = document.getElementById('guestToggleWrap');
+    var guest = document.getElementById('guestMode');
+    var note = document.getElementById('guestNote');
+    if (state.freq !== 'unica') {
+      // Recurrente requiere registro
+      guestWrap.classList.add('hidden');
+      guest.checked = false;
+      note.textContent = 'Los aportes recurrentes requieren un registro sencillo, para que puedas gestionarlos y recibir tu comprobante anual.';
+    } else {
+      guestWrap.classList.remove('hidden');
+      note.textContent = 'Puedes continuar como invitado — solo necesitamos lo mínimo para el pago móvil.';
+    }
+    document.getElementById('registerFields').classList.toggle('hidden', guest.checked);
+  }
+
+  function fmt(n) { return 'Bs ' + n.toLocaleString('es-VE'); }
+
+  function goPay() {
+    if (state.amt === null) {
+      var c = parseInt(document.getElementById('customAmt').value, 10);
+      if (!c || c <= 0) { alert('Indica el monto de tu aporte.'); return; }
+      state.amt = c;
+    }
+    if (!document.getElementById('cedNum').value.trim()) { alert('Indica tu cédula.'); return; }
+    if (!document.getElementById('phone').value.trim()) { alert('Indica tu teléfono de pago móvil.'); return; }
+    state.fund = document.getElementById('fund').value;
+    document.getElementById('sumFund').textContent = state.fund;
+    document.getElementById('sumAmt').textContent = fmt(state.amt);
+    document.getElementById('sumFreq').textContent = state.freq === 'unica' ? 'Única' : (state.freq === 'semanal' ? 'Semanal' : 'Mensual');
+    document.getElementById('sumBank').textContent = document.getElementById('bank').value;
+    go('pay');
+  }
+
+  function finish() {
+    var otp = document.getElementById('otp').value.trim();
+    if (otp.length < 4) { alert('Ingresa la clave C2P que te envió tu banco.'); return; }
+    var now = new Date();
+    document.getElementById('rcptNum').textContent = 'COMPROBANTE Nº ' + String(Math.floor(100000 + Math.random() * 900000));
+    document.getElementById('rcptDate').textContent = now.toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('rcptAmt').textContent = fmt(state.amt);
+    document.getElementById('rcptFund').textContent = state.fund;
+    document.getElementById('rcptRef').textContent = 'R4-' + String(Math.floor(10000000 + Math.random() * 90000000));
+    document.getElementById('doneFreqPill').textContent = state.freq === 'unica' ? 'Aporte único' : ('Aporte ' + (state.freq === 'semanal' ? 'semanal' : 'mensual') + ' activado');
+    go('done');
+  }
+</script>
+
+</body>
+</html>
