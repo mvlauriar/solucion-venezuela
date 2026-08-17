@@ -163,6 +163,7 @@
       <h2>Apoya a tu parroquia</h2>
       <p style="margin:0 0 14px">Tu aporte sostiene la misión, el templo y las obras de caridad. Puedes dar una sola vez o comprometerte con un aporte recurrente.</p>
       <button class="btn" onclick="go('amount')">Donar ahora</button>
+      <button class="btn secondary" id="btnAccount" onclick="accountEntry()">Crear mi cuenta de feligrés</button>
       <button class="btn ghost" onclick="go('admin')">Vista del administrador (demo)</button>
     </div>
   </section>
@@ -205,7 +206,7 @@
       </div>
       <p class="muted" id="freqNote" style="margin:0 0 14px">Un solo aporte, hoy.</p>
 
-      <button class="btn" onclick="go('who')">Continuar</button>
+      <button class="btn" onclick="contFromAmount()">Continuar</button>
       <button class="btn ghost" onclick="go('home')">Volver</button>
     </div>
   </section>
@@ -315,9 +316,60 @@
         <div class="kv"><span>Destino</span><b id="rcptFund">—</b></div>
         <div class="kv"><span>Referencia bancaria</span><b id="rcptRef">—</b></div>
       </div>
-      <p class="muted" style="margin-top:12px" id="doneNote">Tu aporte ya aparece en el panel de la parroquia — sin capturas de pantalla ni verificación manual. Míralo en la vista del administrador desde el inicio.</p>
-      <button class="btn secondary" onclick="go('home')" style="margin-top:8px">Volver al inicio</button>
+      <p class="muted" style="margin-top:12px" id="doneNote">Tu aporte ya aparece en el panel de la parroquia — sin capturas de pantalla ni verificación manual.</p>
+      <div id="doneMember" class="hidden">
+        <button class="btn" onclick="go('member')" style="margin-top:4px">Ver mi cuenta y mi historial</button>
+      </div>
+      <div id="doneGuest" class="hidden">
+        <p style="margin:6px 0 10px;font-size:15px">¿Quieres guardar tu historial y recibir tu comprobante anual?</p>
+        <button class="btn" onclick="convertGuest()" style="margin-top:0">Crear mi cuenta (30 segundos)</button>
+      </div>
+      <button class="btn ghost" onclick="go('home')" style="margin-top:8px">Volver al inicio</button>
     </div>
+  </section>
+
+  <!-- ===== REGISTRO DE FELIGRES ===== -->
+  <section id="scr-register" class="hidden">
+    <div class="card">
+      <h2>Regístrate en tu parroquia</h2>
+      <p class="muted" style="margin-top:0">Treinta segundos. Con tu cuenta: donas en dos toques, guardas tu historial y recibes tu comprobante anual.</p>
+      <div class="field"><label>Nombre y apellido</label><input id="rName" placeholder="María Pérez" /></div>
+      <div class="field">
+        <label>Cédula</label>
+        <div class="row2">
+          <select id="rCedType"><option>V</option><option>E</option></select>
+          <input id="rCedNum" inputmode="numeric" placeholder="12.345.678" />
+        </div>
+      </div>
+      <div class="field"><label>Teléfono</label><input id="rPhone" inputmode="tel" placeholder="0414-123-4567" /></div>
+      <div class="field"><label>Correo (opcional)</label><input id="rEmail" type="email" placeholder="maria@ejemplo.com" /></div>
+      <button class="btn" onclick="register()">Crear mi cuenta</button>
+      <button class="btn ghost" onclick="go('home')">Volver</button>
+    </div>
+  </section>
+
+  <!-- ===== MI PARROQUIA (FELIGRES) ===== -->
+  <section id="scr-member" class="hidden">
+    <div class="card center" style="padding-top:26px">
+      <div class="success-arch" style="width:70px;height:82px;font-size:24px">✦</div>
+      <h2 style="margin-bottom:2px" id="memberGreeting">Hola</h2>
+      <p class="muted" style="margin-top:0">Feligrés registrado · Parroquia Santa Teresa</p>
+      <button class="btn" onclick="go('amount')">Donar en dos toques</button>
+    </div>
+    <div class="card">
+      <h2>Mis aportes</h2>
+      <div id="histList"><p class="muted" style="margin:0">Aún no tienes aportes registrados.</p></div>
+    </div>
+    <div class="card">
+      <h2>Mi plan recurrente</h2>
+      <p class="muted" style="margin:0" id="planInfo">Sin plan activo. Al donar, elige "Semanal" o "Mensual" para comprometerte con tu parroquia.</p>
+    </div>
+    <div class="card">
+      <h2>Comprobante anual</h2>
+      <p class="muted" style="margin:0 0 12px">Resumen de todos tus aportes del año, para tu registro fiscal.</p>
+      <button class="btn secondary" onclick="alert('En la versión completa: PDF con todos tus aportes del año.')">Descargar (demo)</button>
+    </div>
+    <button class="btn ghost" onclick="logout()">Cerrar sesión</button>
   </section>
 
   <!-- ===== VISTA ADMIN (DEMO) ===== -->
@@ -329,7 +381,7 @@
         <div class="stat"><div class="n">Bs 48.350</div><div class="l">Recaudado este mes</div></div>
         <div class="stat"><div class="n">Bs 6.200</div><div class="l">Hoy</div></div>
         <div class="stat"><div class="n">64%</div><div class="l">Aportes recurrentes</div></div>
-        <div class="stat"><div class="n">212</div><div class="l">Feligreses registrados</div></div>
+        <div class="stat"><div class="n" id="memberCount">212</div><div class="l">Feligreses registrados</div></div>
       </div>
     </div>
     <div class="card" style="padding:12px">
@@ -357,7 +409,62 @@
 
 <script>
   var state = { amt: 200, freq: 'unica', fund: 'Colecta dominical' };
-  var screens = ['home','amount','who','pay','done','admin'];
+  // ---------- Cuenta de feligrés (estado en memoria, solo demo) ----------
+  var user = null;
+
+  function accountEntry() { if (user) go('member'); else go('register'); }
+
+  function register() {
+    var name = document.getElementById('rName').value.trim();
+    var ced = document.getElementById('rCedNum').value.trim();
+    var phone = document.getElementById('rPhone').value.trim();
+    if (!name) { alert('Indica tu nombre.'); return; }
+    if (!ced) { alert('Indica tu cédula.'); return; }
+    if (!phone) { alert('Indica tu teléfono.'); return; }
+    setUser({ name: name, ced: ced, phone: phone, email: document.getElementById('rEmail').value.trim() });
+    go('member');
+  }
+
+  function setUser(u) {
+    user = u; user.history = user.history || []; user.plan = user.plan || null;
+    document.getElementById('btnAccount').textContent = 'Mi cuenta · ' + user.name.split(' ')[0];
+    var mc = document.getElementById('memberCount');
+    mc.textContent = String(parseInt(mc.textContent, 10) + 1);
+    renderMember();
+  }
+
+  function logout() {
+    user = null;
+    document.getElementById('btnAccount').textContent = 'Crear mi cuenta de feligrés';
+    go('home');
+  }
+
+  function renderMember() {
+    if (!user) return;
+    document.getElementById('memberGreeting').textContent = 'Hola, ' + user.name.split(' ')[0];
+    var h = document.getElementById('histList');
+    if (user.history.length === 0) {
+      h.innerHTML = '<p class="muted" style="margin:0">Aún no tienes aportes registrados.</p>';
+    } else {
+      var rows = '';
+      for (var i = 0; i < user.history.length; i++) {
+        var d = user.history[i];
+        rows += '<div class="kv"><span>' + d.when + ' · ' + d.fund + '</span><b>' + fmt(d.amt) + '</b></div>';
+      }
+      h.innerHTML = rows;
+    }
+    document.getElementById('planInfo').innerHTML = user.plan
+      ? '<span class="pill-ok">Plan ' + user.plan.freq + ' activo</span> — ' + fmt(user.plan.amt) + ' a ' + user.plan.fund + '. Autorizas cada cobro por WhatsApp; responde BAJA para cancelar.'
+      : 'Sin plan activo. Al donar, elige "Semanal" o "Mensual" para comprometerte con tu parroquia.';
+  }
+
+  function convertGuest() {
+    document.getElementById('rCedNum').value = document.getElementById('cedNum').value;
+    document.getElementById('rPhone').value = document.getElementById('phone').value;
+    go('register');
+  }
+
+  var screens = ['home','amount','who','pay','validating','done','admin','register','member'];
 
   function go(name) {
     for (var i = 0; i < screens.length; i++) {
@@ -420,6 +527,18 @@
 
   function fmt(n) { return 'Bs ' + n.toLocaleString('es-VE'); }
 
+  function contFromAmount() {
+    if (user) {
+      document.getElementById('cedNum').value = user.ced;
+      document.getElementById('phone').value = user.phone;
+      document.getElementById('fName').value = user.name;
+      document.getElementById('guestMode').checked = false;
+      goPay();
+    } else {
+      go('who');
+    }
+  }
+
   function goPay() {
     if (state.amt === null) {
       var c = parseInt(document.getElementById('customAmt').value, 10);
@@ -465,11 +584,26 @@
       document.getElementById('rcptRef').textContent = state.ref;
       document.getElementById('doneFreqPill').textContent = rec ? ('Plan ' + (state.freq === 'semanal' ? 'semanal' : 'mensual') + ' activado') : 'Pago validado';
 
-      // El aha: el aporte aparece en vivo en el panel del administrador
+      // Registro inline durante donación recurrente = cuenta nueva
       var nameInput = document.getElementById('fName').value.trim();
-      var isGuest = document.getElementById('guestMode').checked || !nameInput;
+      if (!user && nameInput && !document.getElementById('guestMode').checked) {
+        setUser({ name: nameInput, ced: document.getElementById('cedNum').value.trim(),
+                  phone: document.getElementById('phone').value.trim(),
+                  email: document.getElementById('fEmail').value.trim() });
+      }
+      if (user) {
+        user.history.unshift({ when: 'hoy', fund: state.fund, amt: state.amt });
+        if (rec) user.plan = { freq: state.freq === 'semanal' ? 'semanal' : 'mensual', amt: state.amt, fund: state.fund };
+        renderMember();
+      }
+      document.getElementById('doneMember').classList.toggle('hidden', !user);
+      document.getElementById('doneGuest').classList.toggle('hidden', !!user);
+
+      // El aha: el aporte aparece en vivo en el panel del administrador
+      var isGuest = !user && (document.getElementById('guestMode').checked || !nameInput);
+      var dispName = user ? user.name : nameInput;
       var display = isGuest ? '<i>Invitado</i>' :
-        nameInput.split(' ')[0] + ' ' + (nameInput.split(' ')[1] || '').charAt(0) + '.';
+        dispName.split(' ')[0] + ' ' + (dispName.split(' ')[1] || '').charAt(0) + '.';
       var tb = document.getElementById('adminRows');
       var tr = document.createElement('tr');
       tr.style.background = '#ebf1ea';
