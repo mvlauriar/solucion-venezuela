@@ -95,6 +95,12 @@
   .kv:last-child { border-bottom: 0; }
   .kv b { color: var(--ink-strong); }
 
+  @keyframes pulse { from { opacity: .55 } to { opacity: 1 } }
+  .copybtn {
+    font-family: var(--prose); font-size: 11.5px; margin-left: 6px;
+    border: 1px solid var(--trav); background: var(--card); color: var(--ink-3);
+    border-radius: 999px; padding: 2px 9px; cursor: pointer; vertical-align: middle;
+  }
   .pill-ok { display: inline-block; background: var(--green-bg); color: var(--green); border-radius: 999px; padding: 3px 12px; font-size: 13px; font-weight: 600; }
 
   .success-arch {
@@ -251,23 +257,46 @@
     </div>
   </section>
 
-  <!-- ===== PANTALLA 4: PAGO C2P ===== -->
+  <!-- ===== PANTALLA 4: PAGO MOVIL ===== -->
   <section id="scr-pay" class="hidden">
     <div class="card">
       <div class="steps"><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot on"></span><span class="step-dot"></span></div>
-      <h2>Confirmar pago móvil</h2>
+      <h2 id="payTitle">Paga con pago móvil</h2>
       <div class="kv"><span>Destino</span><b id="sumFund">—</b></div>
       <div class="kv"><span>Monto</span><b id="sumAmt">—</b></div>
       <div class="kv"><span>Frecuencia</span><b id="sumFreq">—</b></div>
-      <div class="kv"><span>Banco</span><b id="sumBank">—</b></div>
-      <p class="muted" style="margin:14px 0 6px">Tu banco te envió una <b>clave C2P</b> por SMS para autorizar este cobro. Ingrésala aquí:</p>
-      <div class="field">
-        <label>Clave C2P</label>
-        <input id="otp" inputmode="numeric" maxlength="8" placeholder="••••••" style="text-align:center;letter-spacing:.4em;font-size:22px" />
+
+      <div id="onceFlow">
+        <p class="muted" style="margin:14px 0 8px">Abre la app de <b>tu banco</b> (Banesco, Banco de Venezuela, Mercantil, Provincial…) y haz un pago móvil con estos datos:</p>
+        <div class="receipt" style="margin-top:4px">
+          <div class="kv"><span>Banco destino</span><b>R4 Banco (0169) <button class="copybtn" onclick="cp('0169', this)">Copiar</button></b></div>
+          <div class="kv"><span>RIF</span><b>J-12345678-9 <button class="copybtn" onclick="cp('J123456789', this)">Copiar</button></b></div>
+          <div class="kv"><span>Teléfono</span><b>0412-555-0199 <button class="copybtn" onclick="cp('04125550199', this)">Copiar</button></b></div>
+          <div class="kv"><span>Monto exacto</span><b id="payAmtCopy">—</b></div>
+        </div>
+        <div class="field" style="margin-top:14px">
+          <label>Referencia del pago (últimos 6 dígitos)</label>
+          <input id="payRef" inputmode="numeric" maxlength="6" placeholder="######" style="text-align:center;letter-spacing:.35em;font-size:20px" />
+        </div>
+        <button class="btn" onclick="finish()">Ya pagué — validar</button>
       </div>
-      <button class="btn" onclick="finish()">Autorizar pago</button>
+
+      <div id="recFlow" class="hidden">
+        <p style="margin:14px 0 8px">Activarás un <b>plan de aporte recurrente</b>. Cada período recibirás un mensaje de <b>WhatsApp</b> del banco de la parroquia para autorizar el cobro con tu <b>token bancario</b> — sin salir de la conversación. Puedes cancelarlo cuando quieras respondiendo BAJA.</p>
+        <button class="btn" onclick="finish()">Activar mi plan</button>
+      </div>
+
       <button class="btn ghost" onclick="go('who')">Volver</button>
-      <p class="muted center" style="margin-bottom:0;margin-top:12px">El cobro lo procesa directamente tu banco. La parroquia recibe los fondos en su cuenta — la plataforma nunca toca el dinero.</p>
+      <p class="muted center" style="margin-bottom:0;margin-top:12px">El dinero va de tu banco a la cuenta de la parroquia en R4. La validación del pago es automática e inmediata — la plataforma nunca toca los fondos.</p>
+    </div>
+  </section>
+
+  <!-- validando -->
+  <section id="scr-validating" class="hidden">
+    <div class="card center" style="padding:44px 20px">
+      <div class="success-arch" style="animation:pulse 1s infinite alternate">⏳</div>
+      <h2>Validando con R4…</h2>
+      <p class="muted">Confirmando tu pago móvil en tiempo real.</p>
     </div>
   </section>
 
@@ -286,7 +315,7 @@
         <div class="kv"><span>Destino</span><b id="rcptFund">—</b></div>
         <div class="kv"><span>Referencia bancaria</span><b id="rcptRef">—</b></div>
       </div>
-      <p class="muted" style="margin-top:12px" id="doneNote">Recibirás la confirmación por SMS de tu banco. Si aportas de forma recurrente, tu comprobante anual estará disponible en la parroquia.</p>
+      <p class="muted" style="margin-top:12px" id="doneNote">Tu aporte ya aparece en el panel de la parroquia — sin capturas de pantalla ni verificación manual. Míralo en la vista del administrador desde el inicio.</p>
       <button class="btn secondary" onclick="go('home')" style="margin-top:8px">Volver al inicio</button>
     </div>
   </section>
@@ -294,7 +323,7 @@
   <!-- ===== VISTA ADMIN (DEMO) ===== -->
   <section id="scr-admin" class="hidden">
     <div class="card">
-      <h2>Panel del administrador</h2>
+      <h2>Panel del administrador <span class="pill-ok" style="font-size:11px;vertical-align:middle">en vivo</span></h2>
       <p class="muted" style="margin-top:0">Lo que ve la oficina parroquial. Datos de ejemplo.</p>
       <div class="stats">
         <div class="stat"><div class="n">Bs 48.350</div><div class="l">Recaudado este mes</div></div>
@@ -306,7 +335,7 @@
     <div class="card" style="padding:12px">
       <table>
         <thead><tr><th>Hora</th><th>Feligrés</th><th>Destino</th><th style="text-align:right">Bs</th></tr></thead>
-        <tbody>
+        <tbody id="adminRows">
           <tr><td>9:41</td><td>María P.</td><td>Colecta</td><td style="text-align:right">200</td></tr>
           <tr><td>9:22</td><td><i>Invitado</i></td><td>Cáritas</td><td style="text-align:right">500</td></tr>
           <tr><td>8:57</td><td>José R. <span class="pill-ok" style="font-size:10px">recurrente</span></td><td>Diezmo</td><td style="text-align:right">1.000</td></tr>
@@ -359,8 +388,8 @@
   // Frecuencia
   var freqNotes = {
     unica: 'Un solo aporte, hoy.',
-    semanal: 'Se cobrará cada semana con tu autorización C2P. Puedes cancelarlo cuando quieras.',
-    mensual: 'Se cobrará cada mes con tu autorización C2P. Puedes cancelarlo cuando quieras.'
+    semanal: 'Cada semana autorizarás el cobro con tu token bancario por WhatsApp. Cancelas cuando quieras.',
+    mensual: 'Cada mes autorizarás el cobro con tu token bancario por WhatsApp. Cancelas cuando quieras.'
   };
   document.getElementById('freqChips').addEventListener('click', function (e) {
     var chip = e.target.closest('.chip');
@@ -403,21 +432,54 @@
     document.getElementById('sumFund').textContent = state.fund;
     document.getElementById('sumAmt').textContent = fmt(state.amt);
     document.getElementById('sumFreq').textContent = state.freq === 'unica' ? 'Única' : (state.freq === 'semanal' ? 'Semanal' : 'Mensual');
-    document.getElementById('sumBank').textContent = document.getElementById('bank').value;
+    document.getElementById('payAmtCopy').textContent = fmt(state.amt);
+    var rec = state.freq !== 'unica';
+    document.getElementById('onceFlow').classList.toggle('hidden', rec);
+    document.getElementById('recFlow').classList.toggle('hidden', !rec);
+    document.getElementById('payTitle').textContent = rec ? 'Activa tu plan recurrente' : 'Paga con pago móvil';
     go('pay');
   }
 
+  function cp(text, btn) {
+    if (navigator.clipboard) navigator.clipboard.writeText(text);
+    btn.textContent = 'Copiado';
+    setTimeout(function () { btn.textContent = 'Copiar'; }, 1500);
+  }
+
   function finish() {
-    var otp = document.getElementById('otp').value.trim();
-    if (otp.length < 4) { alert('Ingresa la clave C2P que te envió tu banco.'); return; }
-    var now = new Date();
-    document.getElementById('rcptNum').textContent = 'COMPROBANTE Nº ' + String(Math.floor(100000 + Math.random() * 900000));
-    document.getElementById('rcptDate').textContent = now.toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
-    document.getElementById('rcptAmt').textContent = fmt(state.amt);
-    document.getElementById('rcptFund').textContent = state.fund;
-    document.getElementById('rcptRef').textContent = 'R4-' + String(Math.floor(10000000 + Math.random() * 90000000));
-    document.getElementById('doneFreqPill').textContent = state.freq === 'unica' ? 'Aporte único' : ('Aporte ' + (state.freq === 'semanal' ? 'semanal' : 'mensual') + ' activado');
-    go('done');
+    var rec = state.freq !== 'unica';
+    if (!rec) {
+      var ref = document.getElementById('payRef').value.trim();
+      if (ref.length < 4) { alert('Ingresa la referencia de tu pago móvil.'); return; }
+      state.ref = 'R4-' + ref;
+    } else {
+      state.ref = 'PLAN-' + String(Math.floor(1000 + Math.random() * 9000));
+    }
+    go('validating');
+    setTimeout(function () {
+      var now = new Date();
+      document.getElementById('rcptNum').textContent = 'COMPROBANTE Nº ' + String(Math.floor(100000 + Math.random() * 900000));
+      document.getElementById('rcptDate').textContent = now.toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('rcptAmt').textContent = fmt(state.amt);
+      document.getElementById('rcptFund').textContent = state.fund;
+      document.getElementById('rcptRef').textContent = state.ref;
+      document.getElementById('doneFreqPill').textContent = rec ? ('Plan ' + (state.freq === 'semanal' ? 'semanal' : 'mensual') + ' activado') : 'Pago validado';
+
+      // El aha: el aporte aparece en vivo en el panel del administrador
+      var nameInput = document.getElementById('fName').value.trim();
+      var isGuest = document.getElementById('guestMode').checked || !nameInput;
+      var display = isGuest ? '<i>Invitado</i>' :
+        nameInput.split(' ')[0] + ' ' + (nameInput.split(' ')[1] || '').charAt(0) + '.';
+      var tb = document.getElementById('adminRows');
+      var tr = document.createElement('tr');
+      tr.style.background = '#ebf1ea';
+      tr.innerHTML = '<td>ahora</td><td>' + display +
+        (rec ? ' <span class="pill-ok" style="font-size:10px">recurrente</span>' : '') +
+        '</td><td>' + state.fund.split(' ')[0] + '</td><td style="text-align:right">' + state.amt.toLocaleString('es-VE') + '</td>';
+      tb.insertBefore(tr, tb.firstChild);
+
+      go('done');
+    }, 1800);
   }
 </script>
 
