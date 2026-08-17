@@ -464,12 +464,11 @@
     go('register');
   }
 
-  var screens = ['home','amount','who','pay','validating','done','admin','register','member'];
+
 
   function go(name) {
-    for (var i = 0; i < screens.length; i++) {
-      document.getElementById('scr-' + screens[i]).classList.add('hidden');
-    }
+    var all = document.querySelectorAll('section[id^="scr-"]');
+    for (var i = 0; i < all.length; i++) all[i].classList.add('hidden');
     document.getElementById('scr-' + name).classList.remove('hidden');
     window.scrollTo(0, 0);
     if (name === 'who') renderWho();
