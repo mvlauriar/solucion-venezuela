@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Parroquia Santa Teresa · Donaciones — PROTOTIPO</title>
+<title>Iglesia Santa Ana · Donaciones — PROTOTIPO</title>
 <meta name="robots" content="noindex" />
-<meta property="og:title" content="Parroquia Santa Teresa · Donaciones (Prototipo)" />
-<meta property="og:description" content="Aporta a tu parroquia con pago móvil — única vez o recurrente. Prototipo de demostración." />
+<meta property="og:title" content="Iglesia Santa Ana · Donaciones (Prototipo)" />
+<meta property="og:description" content="Aporta a la Iglesia Santa Ana con pago móvil — única vez o recurrente. Prototipo de demostración." />
 <meta property="og:type" content="website" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -145,8 +145,8 @@
   <!-- ===== PORTADA PARROQUIA ===== -->
   <header class="parish-head">
     <div class="parish-arch">✟</div>
-    <h1 id="parishName">Parroquia Santa Teresa</h1>
-    <div class="loc">La Tahona, Caracas · <span class="muted">(nombre configurable por parroquia)</span></div>
+    <h1 id="parishName">Iglesia Santa Ana</h1>
+    <div class="loc">La Lagunita, El Hatillo · Caracas</div>
     <div class="orn">✦ ✦ ✦</div>
   </header>
 
@@ -157,6 +157,9 @@
       <div class="kv"><span>Domingo</span><b>8:00 · 10:30 · 12:00 · 6:00 pm</b></div>
       <div class="kv"><span>Lunes a viernes</span><b>7:00 am · 6:30 pm</b></div>
       <div class="kv"><span>Confesiones</span><b>Sáb 4:00 – 5:30 pm</b></div>
+      <div class="kv"><span>Oficina parroquial</span><b>Mar – Vie 9:00 am – 1:00 pm</b></div>
+      <div class="kv"><span>Teléfono</span><b>+58 212-889-5876</b></div>
+      <p class="muted" style="margin:10px 0 0;font-size:12px;font-style:italic">Horarios de Misa de ejemplo — se configuran con la oficina parroquial.</p>
     </div>
 
     <div class="card">
@@ -298,6 +301,7 @@
       <div class="success-arch" style="animation:pulse 1s infinite alternate">⏳</div>
       <h2>Validando con R4…</h2>
       <p class="muted">Confirmando tu pago móvil en tiempo real.</p>
+      <p class="muted" style="font-size:12px;margin-top:14px">En este prototipo la validación es simulada. En producción, R4 confirma automáticamente la referencia y el monto recibidos en la cuenta de la parroquia.</p>
     </div>
   </section>
 
@@ -332,7 +336,7 @@
   <section id="scr-register" class="hidden">
     <div class="card">
       <h2>Regístrate en tu parroquia</h2>
-      <p class="muted" style="margin-top:0">Treinta segundos. Con tu cuenta: donas en dos toques, guardas tu historial y recibes tu comprobante anual.</p>
+      <p class="muted" style="margin-top:0">Treinta segundos. Con tu cuenta en Santa Ana: donas en dos toques, guardas tu historial y recibes tu comprobante anual.</p>
       <div class="field"><label>Nombre y apellido</label><input id="rName" placeholder="María Pérez" /></div>
       <div class="field">
         <label>Cédula</label>
@@ -353,7 +357,7 @@
     <div class="card center" style="padding-top:26px">
       <div class="success-arch" style="width:70px;height:82px;font-size:24px">✦</div>
       <h2 style="margin-bottom:2px" id="memberGreeting">Hola</h2>
-      <p class="muted" style="margin-top:0">Feligrés registrado · Parroquia Santa Teresa</p>
+      <p class="muted" style="margin-top:0">Feligrés registrado · Iglesia Santa Ana</p>
       <button class="btn" onclick="go('amount')">Donar en dos toques</button>
     </div>
     <div class="card">
@@ -402,7 +406,7 @@
   </section>
 
   <div class="foot">
-    Prototipo · Los fondos van directo del banco del feligrés a la cuenta de la parroquia.<br/>
+    Prototipo v5 · Iglesia Santa Ana · Los fondos van directo del banco del feligrés a la cuenta de la parroquia.<br/>
     La plataforma solo registra y organiza — nunca custodia el dinero.
   </div>
 </div>
